@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh-CN" ng-app>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <title>拖拽功能</title>
+    <style>
+        body{
+            position: relative;
+        }
+        .boxs{
+            width: 100px;
+            height: 100px;
+            margin: 10px;
+            position: absolute;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+            z-index: 1;
+        }
+        .boxs:hover{
+            cursor: pointer;
+        }
+    </style>
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="https://cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+<body>
+<div class="boxs" id="box0" attr="#440A0C"></div>
+<div class="boxs" id="box1" attr="#ff0000"></div>
+<div class="boxs" id="box2" attr="#aaa222"></div>
+<div class="boxs" id="box3" attr="#1E1598"></div>
+<div class="boxs" id="box4" attr="#211E65"></div>
+<div class="boxs" id="box5" attr="#0A9800"></div>
+<div class="boxs" id="box6" attr="#DA9D54"></div>
+<div class="boxs" id="box7" attr="#FF07EE"></div>
+<div class="boxs" id="box8" attr="#365236"></div>
+<div class="boxs" id="box9" attr="#7C1926"></div>
+<div class="boxs" id="box10" attr="#696969"></div>
+<script>
+    window.onload = function () {
+        /*//jQuery
+        for (var i in $('.boxs')){
+            var dom = $('.boxs').eq(i);
+            dom.css('background',dom.attr('attr'));
+            drag(dom[0]);
+        }*/
+        //JavaScript
+        var boxs = document.getElementsByTagName("div");
+        for (var i = 0;i < boxs.length;i++){
+            //给每个box添加不同的颜色。
+            boxs[i].style.backgroundColor = boxs[i].getAttribute("attr");
+            boxs[i].innerText = "box"+i+"点我拖拽";
+            //给每个box调用拖拽函数。
+            drag(boxs[i]);
+        }
+
+    }
+
+    /*封装一个拖拽函数，参数：开启拖拽的元素object*/
+    function drag(object) {
+        //当鼠标在被拖拽元素上按下时，开始拖拽。绑定事件onmousedown
+        object.onmousedown = function (event) {
+            object.setCapture && object.setCapture();//IE兼容
+            event = event || window.event;
+            //div的横向偏移量 = 鼠标.clentX - 元素.offsetLeft
+            //div的纵向偏移量 = 鼠标.clentY - 元素.offsetLeft
+            var objLeft = event.clientX - object.offsetLeft;
+            var objTop = event.clientY - object.offsetTop;
+            //为document绑定一个onmousemove鼠标移动事件
+            document.onmousemove = function (event) {
+                event = event || window.event;
+                //当鼠标移动时被拖拽元素跟随鼠标移动
+                //获得鼠标的坐标
+                var left = event.clientX - objLeft;
+                var top = event.clientY - objTop;
+                //修改object的位置
+                object.style.left = left + "px";
+                object.style.top = top + "px";
+            };
+            //为document绑定一个鼠标松开事件onmouseup
+            document.onmouseup = function () {
+                //当鼠标松开时，被拖拽的元素固定在当前的坐标位置
+                //取消document的onmousemove鼠标移动事件
+                document.onmousemove = null;
+                //取消document的onmouseup鼠标松开事件
+                document.onmouseup = null;
+                //当鼠标松开时，取消对事件的捕获.IE兼容
+                object.releaseCapture && object.releaseCapture();
+            };
+            //取消浏览器的默认行为
+            return false;
+            /*当我们按住ctrl+A 选中页面中的所有内容进行拖拽时，浏览器会默认去搜索引擎中搜索内容，此时会导致拖拽功能的异常，这是浏览器提供的一个默认行为。如果不希望发生这个行为，则可以通过return false来取消默认该默认行为。
+             -但是该方法对于IE不起作用，需要用setCaptrue()方法来对鼠标按下时的相关事件进行捕获，当鼠标松开时也需要使用相对应的releaseCaptrue()来取消之前对时间的捕获。
+             -兼容写法：
+             setCaptrue && setCaptrue()；//绑定
+             releaseCaptrue && releaseCaptrue()；//取消绑定
+             也可以写成：
+             if（ setCaptrue）{ setCaptrue()}//绑定
+             if（releaseCaptrue）{releaseCaptrue()}//取消绑定
+             两种方法一样的效果；*/
+        }
+    }
+</script>
+</body>
+</html>
